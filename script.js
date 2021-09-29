@@ -116,7 +116,7 @@ countCoin();
 //This is for the CHERRY
 var xCherry = 0;
 var yCherry = 0;
-setInterval(function(){
+const setCherry = setInterval(function(){
     xAxis =  Math.floor(Math.random() * 18) + 1;
     yAxis =  Math.floor(Math.random() * 13) + 1;
     if(world[realm][yAxis][xAxis]  == 0){
@@ -176,8 +176,12 @@ function moveGhosts(){
             }
             // When the GHOSTS catches you, your points will be deducted 50
             if(ghostsObject[i].top == pacmanObj.top && ghostsObject[i].left == pacmanObj.left) {
-                points -= 50;
-                score.innerText = points;
+                // points -= 50;
+                // score.innerText = points;
+                clearInterval(move);
+                clearInterval(setWorld);
+                clearInterval(setCherry);
+                document.querySelector('p').style.display = "block";
             }
         }
         // Ghosts wil be scared when Pacman gets the cherry
@@ -238,7 +242,7 @@ function moveGhosts(){
     }
     displayGhosts();
 }
-setInterval(moveGhosts, 300);
+const move = setInterval(moveGhosts, 300);
 
 //========PACMAN=======//
 var pacmanObj = {
@@ -247,7 +251,7 @@ var pacmanObj = {
     degree: 180,
 }
 
-setInterval(function(){
+const setWorld = setInterval(function(){
     movePacman();
     displayPacman();
     displayWorld(realm);
@@ -328,7 +332,7 @@ function  movePacman() {
         pacmanObj.left = 21;
         pacman.style.transition = "none";
         pacman.style.left = pacmanObj.left * 30 + "px";
-    } else if(pacmanObj.left > 21){ //22
+    } else if(pacmanObj.left > 20){ //22
         pacmanObj.left = -1;
         pacman.style.transition = "none";
         pacman.style.left = pacmanObj.left * 30 + "px";
@@ -346,7 +350,7 @@ document.onkeyup = function(e) {
         left = false;
         right = false;
     }   // KEY DOWN
-    else if (e.keyCode == 40 && world[realm][pacmanObj.top+1][pacmanObj.left] != 3 && world[realm][pacmanObj.top+1][pacmanObj.left] != 2) {
+    else if(e.keyCode == 40 && world[realm][pacmanObj.top+1][pacmanObj.left] != 3 && world[realm][pacmanObj.top+1][pacmanObj.left] != 2) {
         up = false;
         down = true;
         left = false;
@@ -358,7 +362,7 @@ document.onkeyup = function(e) {
         left = true;
         right = false;
     }   // KEY RIGHT
-    else if (e.keyCode == 39 && world[realm][pacmanObj.top][pacmanObj.left+1] != 3 && world[realm][pacmanObj.top][pacmanObj.left+1] != 2) {
+    else if(e.keyCode == 39 && world[realm][pacmanObj.top][pacmanObj.left+1] != 3 && world[realm][pacmanObj.top][pacmanObj.left+1] != 2) {
         up = false;
         down = false;
         left = false;
