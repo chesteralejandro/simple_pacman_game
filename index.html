@@ -4,142 +4,14 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="/image/yellow.jpg" type="image/x-icon">
+    <link rel="stylesheet" href="style.css">
     <title>Pacman | Simple Game</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            height: 100vh;
-            background-color: black;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-        }
-        .container {
-            width: 635px;
-            height: 460px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .world {
-            position: relative;
-        }
-
-        div {
-            width: 30px;
-            height: 30px;
-        }
-        .row {
-            display: grid;
-            grid-template-columns: repeat(21, 30px);
-        }
-        .brickH {
-            background: linear-gradient(to top, black,black, mediumblue,black,mediumblue, black,black );
-        }
-        .brickV {
-            background: linear-gradient(to left, black,black, mediumblue,black,mediumblue, black,black );
-        }
-        .coin {
-            width: 15px;
-            height: 15px;
-        }
-
-        .coin__div {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .pacman__design {
-            position: absolute;
-            top: 30px;
-            left: 30px;
-            background-image: url('./image/Pacman.gif');
-            background-size: cover;
-            background-position: center;
-            width: 30px;
-            height: 30px;
-        }
-        .clyde__design {
-            position: absolute;
-            top: 210px;
-            left: 240px;
-            background-image: url('./image/Clyde1.gif');
-            background-size: cover;
-            background-position: center;
-            width: 30px;
-            height: 30px;
-        }
-        .inky__design {
-            position: absolute;
-            top: 210px;
-            left: 360px;
-            background-image: url('./image/Inky1.gif');
-            background-size: cover;
-            background-position: center;
-            width: 30px;
-            height: 30px;
-        }
-        .pinky__design {
-            position: absolute;
-            top: 210px;
-            left: 300px;
-            background-image: url('./image/Pinky1.gif');
-            background-size: cover;
-            background-position: center;
-            width: 30px;
-            height: 30px;
-        } 
-        .scared {
-            position: absolute;
-            background-image: url('./image/scaredGhost.gif');
-            background-size: cover;
-            background-position: center;
-            width: 30px;
-            height: 30px;
-        }
-        .eyes {
-            position: absolute;
-            background-image: url('./image/eyes.png');
-            background-size: cover;
-            background-position: center;
-            width: 17px;
-            height: 15px;
-        }
-        .scorebox{
-            justify-self: center;
-            color: #111;
-            border-radius: 3px;
-            padding: 10px 20px;
-            margin-bottom: 10px;
-            background-image: linear-gradient(to right, #ff8177 0%, #ff867a 0%, #ff8c7f 21%, #f99185 52%, #cf556c 78%, #b12a5b 100%);
-            font-family: Arial, Helvetica, sans-serif;
-            letter-spacing: 1.2px;
-        }
-        .cherry {
-            background-image: url('./image/cherry.gif');
-            background-size: cover;
-            background-position: center;
-            width: 35px;
-            height: 35px;
-        }
-        p {
-            color: white;
-            font-size: 15rem;
-            position: absolute;
-            z-index: 100;
-            display: none;
-        }
-    </style>
 </head>
 <body>
-    <p>Game Over</p>
+    <h1>Game Over</h1>
     <header>
-        <h1 class="scorebox">Coins Left: <span id="coins">0</span> Score: <span class="score">0</span></h1>
+        <h2 class="scorebox">Coins Left: <span id="coins">0</span> Score: <span id="score">0</span></h2>
         <audio id="chomp" src="./pac_chomp.wav"></audio>
     </header>
     <section class="container">
