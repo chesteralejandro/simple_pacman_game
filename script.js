@@ -74,7 +74,6 @@ const worlds = [
     ]
 ];
 
-let chomp = document.getElementById('chomp');
 let worldRange = worlds.length - 1;
 // Randomly selects a stage on the first load.
 let realm = Math.round(Math.random() * worldRange);
@@ -194,7 +193,7 @@ function moveGhosts(){
             horizontal = isScared == false ? 4 : 1;
         }
         // When a GHOST catches PACMAN the game is OVER!!!
-        if(ghosts[i].top == pacman.top && ghosts[i].left == pacman.left) {
+        if(isScared == false && ghosts[i].top == pacman.top && ghosts[i].left == pacman.left) {
             clearInterval(move);
             clearInterval(setWorld);
             clearInterval(setCherry);
@@ -205,6 +204,7 @@ function moveGhosts(){
         if(isScared == true && ghosts[i].top == pacman.top && ghosts[i].left == pacman.left) {
             // Pacman gets 10 points when he catches a ghost while it is scared.
             points += 10;
+            new Audio('/sound/catch_ghost.mp3').play();
             score.innerText = points;
             ghosts[i].top = 7;
             ghosts[i].left = 8;
@@ -274,7 +274,7 @@ function  movePacman() {
     // When PACMAN get COINS
     if(world[pacman.top][pacman.left] == 1) {
         world[pacman.top][pacman.left] = 10;
-        chomp.play();
+        new Audio('/sound/pac_chomp.wav').play();
         points += 10;
         score.innerText = points;
         coinCount--;
@@ -312,6 +312,7 @@ function  movePacman() {
     // When PACMAN get CHERRY
     if(world[pacman.top][pacman.left] == 4) {
         world[pacman.top][pacman.left] = 0;
+        new Audio('/sound/cherry.mp3').play();
         points += 20;
         score.innerText = points;
         scaredGhosts();
