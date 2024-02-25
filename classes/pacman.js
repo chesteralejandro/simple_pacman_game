@@ -3,19 +3,15 @@ export default class Pacman {
 		this.x = 1;
 		this.y = 1;
 		this.z = 0;
-		this.size = 30;
+		this.size = 35;
 		this.points = 0;
 		this.coinCount = 0;
 		this.moveKey = "Freeze";
+		this.figure = document.querySelector(".pacman__design");
 	}
 
 	addPoints(points) {
 		this.points += points;
-	}
-
-	moveUp() {
-		this.y--;
-		this.z = -90;
 	}
 
 	moveDown() {
@@ -28,21 +24,14 @@ export default class Pacman {
 		this.z = 180;
 	}
 
+	moveUp() {
+		this.y--;
+		this.z = -90;
+	}
+
 	moveRight() {
 		this.x++;
 		this.z = 0;
-	}
-
-	setMoveKey(move) {
-		this.moveKey = move;
-	}
-
-	setHorizontalAxis(xAxis) {
-		this.x = xAxis;
-	}
-
-	setCoinCount(coinCount) {
-		this.coinCount = coinCount;
 	}
 
 	resetStatus() {
@@ -50,5 +39,17 @@ export default class Pacman {
 		this.y = 1;
 		this.z = 180;
 		this.moveKey = "Freeze";
+	}
+
+	setCoinCount(coinCount) {
+		this.coinCount = coinCount;
+	}
+
+	setHorizontalAxis(xAxis) {
+		this.x = xAxis;
+	}
+
+	setMoveKey(move) {
+		this.moveKey = move;
 	}
 }

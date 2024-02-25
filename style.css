@@ -1,3 +1,8 @@
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
+:root {
+	--size: 35px;
+}
+
 * {
 	margin: 0;
 	padding: 0;
@@ -17,8 +22,10 @@ h1 {
 	width: 100%;
 	height: 100%;
 	color: white;
+	word-spacing: -6rem;
+	font-family: "Press Start 2P", system-ui;
 	background-color: rgba(0, 0, 0, 0.8);
-	font-size: 12rem;
+	font-size: 8rem;
 	font-weight: 300;
 	letter-spacing: 1.5rem;
 	position: absolute;
@@ -28,13 +35,14 @@ h1 {
 }
 
 div {
-	width: 30px;
-	height: 30px;
+	width: var(--size);
+	height: var(--size);
 }
 
 .container {
-	width: 635px;
-	height: 460px;
+	/* 21 by 15 */
+	width: calc(21 * var(--size));
+	height: calc(15 * var(--size));
 	overflow: hidden;
 	position: relative;
 }
@@ -45,17 +53,17 @@ div {
 
 .row {
 	display: grid;
-	grid-template-columns: repeat(21, 30px);
+	grid-template-columns: repeat(21, var(--size));
 }
 
 .brickH {
-	border-radius: 6px;
+	border-radius: 18px;
 	background: linear-gradient(
 		to top,
 		black,
 		black,
 		mediumblue,
-		#111,
+		rgb(247, 209, 0),
 		mediumblue,
 		black,
 		black
@@ -63,13 +71,13 @@ div {
 }
 
 .brickV {
-	border-radius: 6px;
+	border-radius: 18px;
 	background: linear-gradient(
 		to left,
 		black,
 		black,
 		mediumblue,
-		#111,
+		blue,
 		mediumblue,
 		black,
 		black
@@ -83,8 +91,8 @@ div {
 }
 
 .coin {
-	width: 15px;
-	height: 15px;
+	width: calc(var(--size) - 20px);
+	height: calc(var(--size) - 20px);
 }
 
 .coin__div {
@@ -93,52 +101,47 @@ div {
 	align-items: center;
 }
 
-.transition_none {
-	transition: none;
-	display: none;
-}
-
 .pacman__design {
 	position: absolute;
 	background-image: url("./image/Pacman2.gif");
 	background-size: 125%;
 	background-position: center;
 	border-radius: 50%;
-	width: 30px;
-	height: 30px;
+	width: var(--size);
+	height: var(--size);
 }
 
 .clyde__design {
 	position: absolute;
-	top: 210px;
-	left: 240px;
+	top: calc(var(--size) * 7px);
+	left: calc(var(--size) * 8px);
 	background-image: url("./image/Clyde1.gif");
 	background-size: cover;
 	background-position: center;
-	width: 30px;
-	height: 30px;
+	width: var(--size);
+	height: var(--size);
 }
 
 .inky__design {
 	position: absolute;
-	top: 210px;
-	left: 360px;
+	top: calc(var(--size) * 7px);
+	left: calc(var(--size) * 10px);
 	background-image: url("./image/Inky1.gif");
 	background-size: cover;
 	background-position: center;
-	width: 30px;
-	height: 30px;
+	width: var(--size);
+	height: var(--size);
 }
 
 .pinky__design {
 	position: absolute;
-	top: 210px;
-	left: 300px;
+	top: calc(var(--size) * 7px);
+	left: calc(var(--size) * 12px);
 	background-image: url("./image/Pinky1.gif");
 	background-size: cover;
 	background-position: center;
-	width: 30px;
-	height: 30px;
+	width: var(--size);
+	height: var(--size);
 }
 
 .scared {
@@ -146,8 +149,8 @@ div {
 	background-image: url("./image/scaredGhost.gif");
 	background-size: cover;
 	background-position: center;
-	width: 30px;
-	height: 30px;
+	width: var(--size);
+	height: var(--size);
 }
 
 /* This should be below the scared class */
@@ -156,25 +159,26 @@ div {
 	background-image: url("./image/eyes.png");
 	background-size: cover;
 	background-position: center;
-	width: 17px;
-	height: 15px;
+	width: calc(var(--size) - 13px);
+	height: calc(var(--size) - 15px);
 }
 
 .scorebox {
 	justify-self: center;
-	color: #222;
+	color: rgb(247, 209, 0);
+	text-shadow: 2px 2px rgb(60, 0, 120);
 	border-radius: 3px;
 	padding: 10px 20px;
 	margin-bottom: 10px;
-	background-image: linear-gradient(to bottom, #f83600 0%, #f9d423 100%);
-	font-family: Arial, Helvetica, sans-serif;
-	letter-spacing: 1.2px;
+	background: rgb(247, 136, 0);
+	font-family: "Press Start 2P", system-ui;
+	letter-spacing: 1px;
 }
 
 .cherry {
 	background-image: url("./image/cherry.gif");
 	background-size: cover;
 	background-position: center;
-	width: 35px;
-	height: 35px;
+	width: calc(var(--size) + 5px);
+	height: calc(var(--size) + 5px);
 }

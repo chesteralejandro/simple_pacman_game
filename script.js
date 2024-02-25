@@ -3,20 +3,18 @@ import Pacman from "./classes/pacman.js";
 import worlds from "./worlds.js";
 
 const worldContainer = document.querySelector(".world");
-const pacmanFigure = document.querySelector(".pacman__design");
-const ghostFigures = document.querySelectorAll(".ghost");
 const score = document.querySelector("#score");
 const coins = document.querySelector("#coins");
 
 const worldsIndexRange = worlds.length - 1;
 let worldsIndex = Math.round(Math.random() * worldsIndexRange); // 1-3
-let world = worlds[worldsIndex];
+let world = worlds[2];
 
 const pacman = new Pacman();
 const ghosts = [
-	new Ghost(8, 7, "clyde"),
-	new Ghost(10, 7, "inky"),
-	new Ghost(12, 7, "pinky"),
+	new Ghost(8, 7, "clyde", "left"),
+	new Ghost(10, 7, "inky", "right"),
+	new Ghost(12, 7, "pinky", "up"),
 ];
 
 const topEdgeofMap = 0;
@@ -34,7 +32,7 @@ function changeRealmIndex() {
 	world = worlds[worldsIndex];
 }
 
-let ghostsSpeed = 300;
+let ghostsSpeed = 270; // 300
 
 setInterval(() => {
 	detectCollision();
@@ -44,7 +42,7 @@ setInterval(() => {
 const gameMovementInterval = setInterval(() => {
 	movePacman();
 	displayPacman();
-}, 150);
+}, 210); // 150
 
 const ghostMovementInterval = setInterval(() => {
 	moveGhosts();
@@ -53,9 +51,9 @@ const ghostMovementInterval = setInterval(() => {
 
 const spreadCherryInterval = setInterval(spreadCherry, 4000);
 
-function checkBrick(spaceAhead) {
+function checkNotBrick(spaceAhead) {
 	const brickKeys = [2, 3];
-	return brickKeys.includes(spaceAhead);
+	return !brickKeys.includes(spaceAhead);
 }
 
 function displayWorld() {
@@ -92,11 +90,11 @@ function displayWorld() {
 	if (pacmanGotAllCoins) {
 		// Set the stage
 		changeRealmIndex();
-		// Set Pacman
+		// Reset Pacman
 		pacman.resetStatus();
-		pacmanFigure.style.display = "none";
-		setTimeout(() => (pacmanFigure.style.display = "block"), 100);
-		// Set Ghosts
+		pacman.figure.style.display = "none";
+		setTimeout(() => (pacman.figure.style.display = "block"), 100);
+		// Reset Ghosts
 		for (let ghost of ghosts) {
 			ghost.resetStatus();
 		}
@@ -122,8 +120,8 @@ function detectCollision() {
 		makeGhostsScared();
 	}
 
-	for (let i in ghosts) {
-		const { x, y, name, isScared } = ghosts[i];
+	for (let ghost of ghosts) {
+		const { x, y, name, isScared } = ghost;
 		const pacmanAndGhostCollided = x == pacman.x && y == pacman.y;
 
 		const pacmanCatchGhost = isScared && pacmanAndGhostCollided;
@@ -132,15 +130,11 @@ function detectCollision() {
 		if (pacmanCatchGhost) {
 			pacman.addPoints(10);
 			new Audio("/sound/catch_ghost.mp3").play();
-			ghosts[i].backToBase();
-
-			const ghostFigure = document.querySelector(`.${name}__design`);
-			ghostFigure.classList.remove("scared");
-			ghostFigure.classList.add("eyes");
-			setTimeout(() => {
-				const ghost = document.querySelectorAll(".eyes")[0];
-				ghost.classList.remove("eyes");
-			}, 300);
+			ghost.figure.classList.remove("scared");
+			ghost.figure.classList.add("eyes");
+			ghost.backToBase();
+			ghost.setIsScared(false);
+			setTimeout(() => ghost.figure.classList.remove("eyes"), 300);
 		}
 
 		if (ghostCatchPacman) {
@@ -172,106 +166,113 @@ function spreadCherry() {
 function makeGhostsScared() {
 	const secondsToRemoveScaredness = 6000;
 	for (let ghost of ghosts) {
-		const ghostFigure = document.querySelector(`.${ghost.name}__design`);
-		ghostFigure.classList.add("scared");
+		ghost.figure.classList.add("scared");
 		ghost.setIsScared(true);
-	}
-	setTimeout(() => {
-		for (let ghost of ghosts) {
-			const ghostFigure = document.querySelector(
-				`.${ghost.name}__design`
-			);
-			ghostFigure.classList.remove("scared");
+		setTimeout(() => {
+			ghost.figure.classList.remove("scared");
 			ghost.setIsScared(false);
-		}
-	}, secondsToRemoveScaredness);
+		}, secondsToRemoveScaredness);
+	}
 }
 
 function displayGhosts() {
-	for (let i in ghosts) {
-		const { x, y, size } = ghosts[i];
-
-		const ghostWentIntoLeftPortal = x < leftEdgeOfMap - 1;
-		const ghostWentIntoRightPortal = x > rightEdgeOfMap + 1;
-		// 500ms
-		let transition = "top 350ms ease, left 350ms ease";
+	for (let ghost of ghosts) {
+		const ghostWentIntoLeftPortal = ghost.x < leftEdgeOfMap;
+		const ghostWentIntoRightPortal = ghost.x > rightEdgeOfMap;
+		let transition = "top 350ms ease, left 350ms ease"; // 500ms
 
 		if (ghostWentIntoLeftPortal) {
-			ghosts[i].setHorizontalAxis(rightEdgeOfMap + 1);
+			ghost.setHorizontalAxis(rightEdgeOfMap + 1);
 			transition = "none";
 		} else if (ghostWentIntoRightPortal) {
-			ghosts[i].setHorizontalAxis(leftEdgeOfMap - 1);
+			ghost.setHorizontalAxis(leftEdgeOfMap - 1);
 			transition = "none";
 		}
 
+		const { x, y, size } = ghost;
 		const attributes = `top: ${y * size}px; left: ${
 			x * size
 		}px; transition: ${transition}`;
-		ghostFigures[i].setAttribute("style", attributes);
+		ghost.figure.setAttribute("style", attributes);
 	}
 }
 
 function moveGhosts() {
-	for (let i in ghosts) {
-		const { x, y, name, isScared } = ghosts[i];
-		// Returns a random integer from 1 to 4
-		let vertical = Math.round(Math.random() * 4) + 1;
-		let horizontal = Math.round(Math.random() * 4) + 1;
+	for (let ghost of ghosts) {
+		const { x, y, path, pathCount, isScared } = ghost;
+
+		const aboveIsNotBrick = checkNotBrick(world[y - 1][x]);
+		const belowIsNotBrick = checkNotBrick(world[y + 1][x]);
+		const leftIsNotBrick = checkNotBrick(world[y][x - 1]);
+		const rightIsNotBrick = checkNotBrick(world[y][x + 1]);
+
+		const pathChoices = [
+			{ status: aboveIsNotBrick, path: "up", isVertical: true },
+			{ status: belowIsNotBrick, path: "down", isVertical: true },
+			{ status: leftIsNotBrick, path: "left", isHorizontal: true },
+			{ status: rightIsNotBrick, path: "right", isHorizontal: true },
+		];
+
+		const newAvailablePaths = pathChoices.filter(
+			(pathChoice) => pathChoice.status
+		);
+
+		if (newAvailablePaths != pathCount) {
+			ghost.decidePath(newAvailablePaths);
+		}
 
 		const insideMapHorizontally = x > leftEdgeOfMap && x < rightEdgeOfMap;
 		const verticalGap = pacman.y - y;
-		const distanceToDetectAbove = verticalGap < 0 && verticalGap > -5;
-		const distanceToDetectBelow = verticalGap > 0 && verticalGap < 5;
+		const distanceToDetectAbove = verticalGap < 0 && verticalGap > -6;
+		const distanceToDetectBelow = verticalGap > 0 && verticalGap < 6;
 		// Chase PACMAN if near Vertically
-		if (distanceToDetectAbove && insideMapHorizontally) {
-			vertical = isScared ? 4 : 1;
-		} else if (distanceToDetectBelow && insideMapHorizontally) {
-			vertical = isScared ? 1 : 4;
+		if (distanceToDetectAbove && pacman.x == x) {
+			isScared ? ghost.setPath("down") : ghost.setPath("up");
+		} else if (distanceToDetectBelow && pacman.x == x) {
+			isScared ? ghost.setPath("up") : ghost.setPath("down");
 		}
 
 		const horizontalGap = pacman.x - x;
-		const distanceToDetectLeft = horizontalGap < 0 && horizontalGap > -5;
-		const distanceToDetectRight = horizontalGap > 0 && horizontalGap < 5;
+		const distanceToDetectLeft = horizontalGap < 0 && horizontalGap > -6;
+		const distanceToDetectRight = horizontalGap > 0 && horizontalGap < 6;
 		// Chase PACMAN if near Horizontally
-		if (distanceToDetectLeft) {
-			horizontal = isScared ? 4 : 1;
-		} else if (distanceToDetectRight) {
-			horizontal = isScared ? 1 : 4;
+		if (distanceToDetectLeft && pacman.y == y) {
+			isScared ? ghost.setPath("right") : ghost.setPath("left");
+		} else if (distanceToDetectRight && pacman.y == y) {
+			isScared ? ghost.setPath("left") : ghost.setPath("right");
 		}
 
-		const aboveIsNotBrick = !checkBrick(world[y - 1][x]);
-		const belowIsNotBrick = !checkBrick(world[y + 1][x]);
-		const leftIsNotBrick = !checkBrick(world[y][x - 1]);
-		const rightIsNotBrick = !checkBrick(world[y][x + 1]);
+		const pathIsBlocked =
+			(path == "up" && !aboveIsNotBrick) ||
+			(path == "down" && !belowIsNotBrick) ||
+			(path == "left" && !leftIsNotBrick) ||
+			(path == "right" && !rightIsNotBrick);
 
-		// Ghosts move Vertically
-		if (
-			(vertical == 1 || vertical == 2) &&
-			aboveIsNotBrick &&
-			insideMapHorizontally
-		) {
-			ghosts[i].moveUp();
+		if (pathIsBlocked) {
+			ghost.changePath(newAvailablePaths);
+		}
+
+		if (ghost.path == "up" && aboveIsNotBrick && insideMapHorizontally) {
+			ghost.moveUp();
 		} else if (
-			(vertical == 3 || vertical == 4) &&
+			ghost.path == "down" &&
 			belowIsNotBrick &&
 			insideMapHorizontally
 		) {
-			ghosts[i].moveDown();
-		}
-		// Ghosts move Horizontally
-		if ((horizontal == 1 || horizontal == 2) && leftIsNotBrick) {
-			ghosts[i].moveLeft();
-		} else if ((horizontal == 3 || horizontal == 4) && rightIsNotBrick) {
-			ghosts[i].moveRight();
+			ghost.moveDown();
+		} else if (ghost.path == "left" && leftIsNotBrick) {
+			ghost.moveLeft();
+		} else if (ghost.path == "right" && rightIsNotBrick) {
+			ghost.moveRight();
 		}
 	}
 }
 
 //=========================== PACMAN =================================//
 function displayPacman() {
-	const pacmanWentIntoLeftPortal = pacman.x < leftEdgeOfMap - 1;
-	const pacmanWentIntoRightPortal = pacman.x > rightEdgeOfMap + 1;
-	let transition = "top 250ms ease, left 250ms ease";
+	const pacmanWentIntoLeftPortal = pacman.x < leftEdgeOfMap;
+	const pacmanWentIntoRightPortal = pacman.x > rightEdgeOfMap;
+	let transition = "top 260ms ease, left 260ms ease";
 
 	if (pacmanWentIntoLeftPortal) {
 		pacman.setHorizontalAxis(rightEdgeOfMap + 1);
@@ -285,16 +286,16 @@ function displayPacman() {
 	const attributes = `transform: rotateZ(${z}deg); left: ${
 		x * size
 	}px; top: ${y * size}px; transition: ${transition}`;
-	pacmanFigure.setAttribute("style", attributes);
+	pacman.figure.setAttribute("style", attributes);
 }
 
 function movePacman() {
-	const { x, y, moveKey, points } = pacman;
+	const { x, y, moveKey } = pacman;
 
-	const aboveIsNotBrick = !checkBrick(world[y - 1][x]);
-	const belowIsNotBrick = !checkBrick(world[y + 1][x]);
-	const leftIsNotBrick = !checkBrick(world[y][x - 1]);
-	const rightIsNotBrick = !checkBrick(world[y][x + 1]);
+	const aboveIsNotBrick = checkNotBrick(world[y - 1][x]);
+	const belowIsNotBrick = checkNotBrick(world[y + 1][x]);
+	const leftIsNotBrick = checkNotBrick(world[y][x - 1]);
+	const rightIsNotBrick = checkNotBrick(world[y][x + 1]);
 
 	const pacmanCanMoveUp = moveKey == "ArrowUp" && aboveIsNotBrick;
 	const pacmanCanMoveDown = moveKey == "ArrowDown" && belowIsNotBrick;
@@ -321,10 +322,10 @@ function movePacman() {
 document.onkeyup = function ({ key: move }) {
 	const { x, y } = pacman;
 
-	const aboveIsNotBrick = !checkBrick(world[y - 1][x]);
-	const belowIsNotBrick = !checkBrick(world[y + 1][x]);
-	const leftIsNotBrick = !checkBrick(world[y][x - 1]);
-	const rightIsNotBrick = !checkBrick(world[y][x + 1]);
+	const aboveIsNotBrick = checkNotBrick(world[y - 1][x]);
+	const belowIsNotBrick = checkNotBrick(world[y + 1][x]);
+	const leftIsNotBrick = checkNotBrick(world[y][x - 1]);
+	const rightIsNotBrick = checkNotBrick(world[y][x + 1]);
 
 	const canMoveUp = move == "ArrowUp" && aboveIsNotBrick;
 	const canMoveDown = move == "ArrowDown" && belowIsNotBrick;
