@@ -6,10 +6,6 @@ const worldContainer = document.querySelector(".world");
 const score = document.querySelector("#score");
 const coins = document.querySelector("#coins");
 
-const worldsIndexRange = worlds.length - 1;
-let worldsIndex = Math.round(Math.random() * worldsIndexRange); // 1-3
-let world = worlds[2];
-
 const pacman = new Pacman();
 const ghosts = [
 	new Ghost(8, 7, "clyde", "left"),
@@ -21,6 +17,10 @@ const topEdgeofMap = 0;
 const bottomEdgeofMap = 14;
 const leftEdgeOfMap = 0;
 const rightEdgeOfMap = 20;
+
+const worldsIndexRange = worlds.length - 1;
+let worldsIndex = Math.round(Math.random() * worldsIndexRange); // 1-3
+let world = worlds[worldsIndex];
 
 function changeRealmIndex() {
 	worldsIndex++;
@@ -141,7 +141,7 @@ function detectCollision() {
 			clearInterval(ghostMovementInterval);
 			clearInterval(gameMovementInterval);
 			clearInterval(spreadCherryInterval);
-			document.querySelector("h1").style.display = "grid";
+			document.querySelector("dialog").show();
 		}
 	}
 }
@@ -150,6 +150,7 @@ function detectCollision() {
 function spreadCherry() {
 	let horizontalSpawnArea = Math.floor(Math.random() * 19) + 1;
 	let verticalSpawnArea = Math.floor(Math.random() * 13) + 1;
+
 	const chosenCoordinateIsEmpty =
 		world[verticalSpawnArea][horizontalSpawnArea] == 0;
 	const cherryDisplay = 4;
@@ -162,6 +163,7 @@ function spreadCherry() {
 		}, 3500);
 	}
 }
+
 //=========================== GHOSTS =================================//
 function makeGhostsScared() {
 	const secondsToRemoveScaredness = 6000;
@@ -190,9 +192,8 @@ function displayGhosts() {
 		}
 
 		const { x, y, size } = ghost;
-		const attributes = `top: ${y * size}px; left: ${
-			x * size
-		}px; transition: ${transition}`;
+		const attributes = `top: ${y * size}px; display: block; 
+		left: ${x * size}px; transition: ${transition}`;
 		ghost.figure.setAttribute("style", attributes);
 	}
 }
@@ -283,14 +284,13 @@ function displayPacman() {
 	}
 
 	const { x, y, z, size } = pacman;
-	const attributes = `transform: rotateZ(${z}deg); left: ${
-		x * size
-	}px; top: ${y * size}px; transition: ${transition}`;
+	const attributes = `transform: rotateZ(${z}deg); display: block;
+		left: ${x * size}px; top: ${y * size}px; transition: ${transition}`;
 	pacman.figure.setAttribute("style", attributes);
 }
 
-function movePacman() {
-	const { x, y, moveKey } = pacman;
+function checkMobility(moveKey) {
+	const { x, y } = pacman;
 
 	const aboveIsNotBrick = checkNotBrick(world[y - 1][x]);
 	const belowIsNotBrick = checkNotBrick(world[y + 1][x]);
@@ -301,6 +301,22 @@ function movePacman() {
 	const pacmanCanMoveDown = moveKey == "ArrowDown" && belowIsNotBrick;
 	const pacmanCanMoveLeft = moveKey == "ArrowLeft" && leftIsNotBrick;
 	const pacmanCanMoveRight = moveKey == "ArrowRight" && rightIsNotBrick;
+
+	return {
+		pacmanCanMoveUp,
+		pacmanCanMoveDown,
+		pacmanCanMoveLeft,
+		pacmanCanMoveRight,
+	};
+}
+
+function movePacman() {
+	const {
+		pacmanCanMoveUp,
+		pacmanCanMoveDown,
+		pacmanCanMoveLeft,
+		pacmanCanMoveRight,
+	} = checkMobility(pacman.moveKey);
 
 	if (pacmanCanMoveUp) {
 		pacman.moveUp();
@@ -320,28 +336,62 @@ function movePacman() {
  *
  */
 document.onkeyup = function ({ key: move }) {
+	const {
+		pacmanCanMoveUp,
+		pacmanCanMoveDown,
+		pacmanCanMoveLeft,
+		pacmanCanMoveRight,
+	} = checkMobility(move);
+
+	const pathIsClear =
+		pacmanCanMoveUp ||
+		pacmanCanMoveDown ||
+		pacmanCanMoveLeft ||
+		pacmanCanMoveRight;
+
 	const { x, y } = pacman;
 
-	const aboveIsNotBrick = checkNotBrick(world[y - 1][x]);
-	const belowIsNotBrick = checkNotBrick(world[y + 1][x]);
-	const leftIsNotBrick = checkNotBrick(world[y][x - 1]);
-	const rightIsNotBrick = checkNotBrick(world[y][x + 1]);
-
-	const canMoveUp = move == "ArrowUp" && aboveIsNotBrick;
-	const canMoveDown = move == "ArrowDown" && belowIsNotBrick;
-	const canMoveLeft = move == "ArrowLeft" && leftIsNotBrick;
-	const canMoveRight = move == "ArrowRight" && rightIsNotBrick;
 	const locatedInsideMap =
 		x > leftEdgeOfMap &&
 		x < rightEdgeOfMap &&
 		y > topEdgeofMap &&
 		y < bottomEdgeofMap;
 
-	const pacmanCanChangeDirection =
-		locatedInsideMap &&
-		(canMoveUp || canMoveDown || canMoveLeft || canMoveRight);
+	const pacmanCanChangeDirection = locatedInsideMap && pathIsClear;
 
 	if (pacmanCanChangeDirection) {
 		pacman.setMoveKey(move);
 	}
 };
+
+function setCharacterSize(screenWidth) {
+	const screenIsSmall = screenWidth <= 650;
+	const screenIsMedium = screenWidth >= 651 && screenWidth <= 1020;
+	let figureSize = 38;
+
+	if (screenIsSmall) {
+		figureSize = 22;
+	}
+
+	if (screenIsMedium) {
+		figureSize = 30;
+	}
+
+	pacman.setSize(figureSize);
+	for (let ghost of ghosts) {
+		ghost.setSize(figureSize);
+	}
+
+	displayPacman();
+	displayGhosts();
+}
+
+window.addEventListener("load", () => {
+	const screenWidth = document.querySelector("body").offsetWidth;
+	setCharacterSize(screenWidth);
+});
+
+window.addEventListener("resize", (event) => {
+	const screenWidth = event.target.innerWidth;
+	setCharacterSize(screenWidth);
+});

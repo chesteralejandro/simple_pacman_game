@@ -5,7 +5,7 @@ export default class Ghost {
 		this.initialX = x;
 		this.initialY = y;
 		this.y = y;
-		this.size = 35;
+		this.size = 38;
 		this.isScared = false;
 		this.pathCount = 0;
 		this.path = path;
@@ -65,5 +65,9 @@ export default class Ghost {
 
 	setPath(newPath) {
 		this.path = newPath;
+	}
+
+	setSize(newSize) {
+		this.size = newSize;
 	}
 }

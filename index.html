@@ -14,14 +14,19 @@
 		<title>Pacman | Simple Game</title>
 	</head>
 	<body>
-		<h1>Game Over</h1>
-		<header>
-			<h2 class="scorebox">
+		<dialog>
+			<p>Game Over</p>
+		</dialog>
+		<header class="scorebox">
+			<h2>
 				Score:
-				<span id="score">0</span> || Coins Left:
+				<span id="score">0</span>
+			</h2>
+			<h2>
+				Coins Left:
 				<span id="coins">0</span>
 			</h2>
-			<audio id="chomp" src="./pac_chomp.wav"></audio>
+			<!-- <audio id="chomp" src="./pac_chomp.wav"></audio> -->
 		</header>
 		<section class="container">
 			<div class="world"></div>

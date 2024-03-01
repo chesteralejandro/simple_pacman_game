@@ -1,6 +1,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
+
 :root {
-	--size: 35px;
+	--size: 38px;
+	--coinSizeDeduction: 25px;
 }
 
 * {
@@ -11,6 +13,7 @@
 
 body {
 	height: 100vh;
+	font-family: "Press Start 2P", system-ui;
 	background: url("image/repeated-square-dark.png");
 	display: flex;
 	align-items: center;
@@ -18,20 +21,20 @@ body {
 	flex-direction: column;
 }
 
-h1 {
+dialog {
 	width: 100%;
 	height: 100%;
-	color: white;
-	word-spacing: -6rem;
-	font-family: "Press Start 2P", system-ui;
-	background-color: rgba(0, 0, 0, 0.8);
-	font-size: 8rem;
-	font-weight: 300;
-	letter-spacing: 1.5rem;
-	position: absolute;
+	background: rgba(0, 0, 0, 0.9);
 	z-index: 100;
-	display: none;
+	padding: 180px 0.7rem 0;
 	place-items: center;
+}
+
+dialog > p {
+	color: white;
+	text-align: center;
+	font-size: 8rem;
+	word-spacing: -2rem;
 }
 
 div {
@@ -91,8 +94,8 @@ div {
 }
 
 .coin {
-	width: calc(var(--size) - 20px);
-	height: calc(var(--size) - 20px);
+	width: calc(var(--size) - var(--coinSizeDeduction));
+	height: calc(var(--size) - var(--coinSizeDeduction));
 }
 
 .coin__div {
@@ -102,6 +105,7 @@ div {
 }
 
 .pacman__design {
+	display: none;
 	position: absolute;
 	background-image: url("./image/Pacman2.gif");
 	background-size: 125%;
@@ -112,9 +116,8 @@ div {
 }
 
 .clyde__design {
+	display: none;
 	position: absolute;
-	top: calc(var(--size) * 7px);
-	left: calc(var(--size) * 8px);
 	background-image: url("./image/Clyde1.gif");
 	background-size: cover;
 	background-position: center;
@@ -123,9 +126,8 @@ div {
 }
 
 .inky__design {
+	display: none;
 	position: absolute;
-	top: calc(var(--size) * 7px);
-	left: calc(var(--size) * 10px);
 	background-image: url("./image/Inky1.gif");
 	background-size: cover;
 	background-position: center;
@@ -134,9 +136,8 @@ div {
 }
 
 .pinky__design {
+	display: none;
 	position: absolute;
-	top: calc(var(--size) * 7px);
-	left: calc(var(--size) * 12px);
 	background-image: url("./image/Pinky1.gif");
 	background-size: cover;
 	background-position: center;
@@ -164,15 +165,19 @@ div {
 }
 
 .scorebox {
-	justify-self: center;
-	color: rgb(247, 209, 0);
-	text-shadow: 2px 2px rgb(60, 0, 120);
-	border-radius: 3px;
-	padding: 10px 20px;
-	margin-bottom: 10px;
 	background: rgb(247, 136, 0);
-	font-family: "Press Start 2P", system-ui;
+	border-radius: 3px;
+	color: rgb(247, 209, 0);
+	display: flex;
+	font-size: 1rem;
+	justify-content: space-between;
+	justify-self: center;
+	margin-bottom: 10px;
 	letter-spacing: 1px;
+	padding: 10px 20px;
+	text-shadow: 2px 2px rgb(60, 0, 120);
+	width: 90%;
+	max-width: 750px;
 }
 
 .cherry {
@@ -181,4 +186,34 @@ div {
 	background-position: center;
 	width: calc(var(--size) + 5px);
 	height: calc(var(--size) + 5px);
+}
+
+@media only screen and (max-width: 650px) {
+	:root {
+		--size: 22px;
+		--coinSizeDeduction: 15px;
+	}
+
+	dialog > p {
+		font-size: 4rem;
+	}
+
+	.scorebox {
+		font-size: 0.5rem;
+	}
+}
+
+@media only screen and (min-width: 651px) and (max-width: 1020px) {
+	:root {
+		--size: 30px;
+		--coinSizeDeduction: 18px;
+	}
+
+	dialog > p {
+		font-size: 6rem;
+	}
+
+	.scorebox {
+		font-size: 0.9rem;
+	}
 }
